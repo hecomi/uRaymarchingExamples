@@ -103,8 +103,8 @@ inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)
     float p = Plane(pPos, float3(0, 1, 0));
     float4 a = normalize(float4(1.0 / s, 1.0 / c, 1.0 / t, 1.0 / p));
     o.Albedo =
-        a.x * _CubeColor +
-        a.y * _SphereColor +
+        a.x * _SphereColor +
+        a.y * _CubeColor +
         a.z * _TorusColor +
         a.w * _PlaneColor;
 }
