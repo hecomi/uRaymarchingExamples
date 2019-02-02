@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3acd6fe57257048db802c1c4c2b75248, type: 3}
+  m_Name: Deferred_SphereBoxMorph
+  m_EditorClassIdentifier: 
+  shaderName: Deffered_SphereBoxMorph
+  shaderReference: {fileID: 4800000, guid: 36acd277d50731f4294963d30204dd77, type: 3}
+  shaderTemplate: uRaymarching/Deferred/Standard
+  variables:
+  - key: '%Name%'
+    value: 
+  - key: '%RaymarchingShaderDirectory%'
+    value: 
+  - key: '%DistanceFunction%'
+    value: 
+  - key: '%PostEffect%'
+    value: 
+  - key: Name
+    value: Deffered_SphereBoxMorph
+  - key: RaymarchingShaderDirectory
+    value: Assets/uRaymarching/Shaders/Include
+  - key: Culling
+    value: Back
+  - key: LOD
+    value: 200
+  - key: LightModel
+    value: Standard
+  - key: Option
+    value: 
+  - key: SurfaceFunctionInput
+    value: SurfaceOutputStandard
+  - key: ObjectShape
+    value: CUBE
+  - key: RenderType
+    value: Opaque
+  - key: RenderQueue
+    value: Geometry
+  conditions:
+  - key: ShadowCaster
+    value: 1
+  - key: UseObjectScale
+    value: 0
+  - key: DoNotOutputDepth
+    value: 0
+  - key: FallbackToDiffuse
+    value: 1
+  - key: FallbackToStandardShader
+    value: 0
+  - key: WorldSpace
+    value: 0
+  - key: FollowObjectScale
+    value: 0
+  - key: SphericalHarmonicsPerPixel
+    value: 1
+  - key: CameraInsideObject
+    value: 0
+  - key: UseTesselation
+    value: 0
+  - key: UseRaymarchingDepth
+    value: 1
+  - key: FullScreen
+    value: 0
+  blocks:
+  - key: Properties
+    value: // _Color("Color", Color) = (1.0, 1.0, 1.0, 1.0)
+    folded: 0
+  - key: DistanceFunction
+    value: "inline float DistanceFunction(float3 pos)\n{\n    float t = _Time.x;\n
+      \   float a = 6 * PI * t;\n    float s = pow(sin(a), 2.0);\n    float d1 = Sphere(pos,
+      0.75);\n    float d2 = RoundBox(\n        Repeat(pos, 0.2),\n        0.1 - 0.1
+      * s,\n        0.1 / length(pos * 2.0));\n    return lerp(d1, d2, s);\n}"
+    folded: 1
+  - key: PostEffect
+    value: 'inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)
+
+      {
+
+      }'
+    folded: 1
+  - key: SurfaceFunction
+    value: 'fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+
+      o.Albedo = c.rgb;
+
+      o.Metallic = _Metallic;
+
+      o.Smoothness = _Glossiness;
+
+      o.Alpha = c.a;
+
+      o.Normal = UnpackNormal(tex2D(_NormalTex, IN.uv_MainTex));'
+    folded: 0
+  constants: {fileID: 11400000, guid: 4df15a420345e4af98645ddd9620aa5b, type: 2}
+  basicFolded: 1
+  conditionsFolded: 1
+  variablesFolded: 1
+  materialsFolded: 1
+  constantsFolded: 0

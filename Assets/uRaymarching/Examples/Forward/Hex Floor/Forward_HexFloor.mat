@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Forward_HexFloor
+  m_Shader: {fileID: 4800000, guid: 1e55b0465e75aa84bae30bddad6a85b7, type: 3}
+  m_ShaderKeywords: _ZWRITE_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats:
+    - _Cull: 2
+    - _Glossiness: 0.5
+    - _Loop: 30
+    - _Metallic: 0.5
+    - _MinDistance: 0.01
+    - _ShadowExtraBias: 0
+    - _ShadowLoop: 30
+    - _ShadowMinDistance: 0.01
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 0.26214847, g: 0.38228413, b: 0.4056604, a: 1}
+    - _TopColor: {r: 0.062158704, g: 1, b: 0, a: 0}

@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3acd6fe57257048db802c1c4c2b75248, type: 3}
+  m_Name: TransformProvider
+  m_EditorClassIdentifier: 
+  shaderName: TransformProvider
+  shaderReference: {fileID: 4800000, guid: d36b7ffba7b1e4d39b4e60e89ae1f03d, type: 3}
+  shaderTemplate: uRaymarching/Forward/Standard
+  variables:
+  - key: Name
+    value: TransformProvider
+  - key: ObjectShape
+    value: CUBE
+  - key: RaymarchingShaderDirectory
+    value: Assets/uRaymarching/Shaders/Include
+  - key: RenderType
+    value: Opaque
+  - key: RenderQueue
+    value: Geometry
+  conditions:
+  - key: ShadowCaster
+    value: 1
+  - key: FullScreen
+    value: 0
+  - key: WorldSpace
+    value: 1
+  - key: FollowObjectScale
+    value: 0
+  - key: CameraInsideObject
+    value: 0
+  - key: UseRaymarchingDepth
+    value: 1
+  - key: FallbackToDiffuse
+    value: 1
+  - key: Blend
+    value: 0
+  - key: UseCameraDepthTexture
+    value: 0
+  - key: DisableViewCulling
+    value: 0
+  - key: SphericalHarmonicsPerPixel
+    value: 0
+  - key: ForwardAdd
+    value: 1
+  - key: FallbackToStandardShader
+    value: 1
+  blocks:
+  - key: Properties
+    value: '[Header(Additional Parameters)]
+
+      _Smooth("Smooth", float) = 1.0'
+    folded: 1
+  - key: DistanceFunction
+    value: "float4x4 _Cube;\nfloat4x4 _Sphere;\nfloat4x4 _Torus;\nfloat4x4 _Plane;
+      \nfloat _Smooth;\n\ninline float DistanceFunction(float3 wpos)\n{\n    float4
+      cubePos = mul(_Cube, float4(wpos, 1.0));\n    float4 spherePos = mul(_Sphere,
+      float4(wpos, 1.0));\n    float s = Sphere(spherePos, 0.5);\n    float c = Box(cubePos,
+      0.25);\n    return SmoothMin(s, c, _Smooth);\n}"
+    folded: 1
+  - key: PostEffect
+    value: 'inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)
+
+      {
+
+      }'
+    folded: 0
+  constants: {fileID: 11400000, guid: 4df15a420345e4af98645ddd9620aa5b, type: 2}
+  basicFolded: 1
+  conditionsFolded: 1
+  variablesFolded: 1
+  materialsFolded: 0
+  constantsFolded: 1
