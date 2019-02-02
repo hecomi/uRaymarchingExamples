@@ -20,14 +20,18 @@ Material:
     m_TexEnvs: []
     m_Floats:
     - _Cull: 2
-    - _Glossiness: 0.5
-    - _Loop: 30
-    - _Metallic: 0.5
+    - _Glossiness: 1
+    - _Loop: 50
+    - _Metallic: 0.228
     - _MinDistance: 0.01
     - _ShadowExtraBias: 0
-    - _ShadowLoop: 30
+    - _ShadowLoop: 50
     - _ShadowMinDistance: 0.01
     - _Smooth: 2
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _CubeColor: {r: 0.08025527, g: 1, b: 0, a: 1}
+    - _PlaneColor: {r: 0, g: 0.031424284, b: 1, a: 1}
+    - _SphereColor: {r: 1, g: 0.7606493, b: 0, a: 1}
+    - _TorusColor: {r: 1, g: 0.12530687, b: 0, a: 1}
