@@ -1,4 +1,4 @@
-Shader "Raymarching/TransformProvider"
+Shader "Raymarching/SnowCrystal"
 {
 
 Properties
@@ -22,12 +22,7 @@ Properties
     _ShadowExtraBias("Shadow Extra Bias", Range(0.0, 1.0)) = 0.0
 
 // @block Properties
-[Header(Additional Parameters)]
-_Smooth("Smooth", float) = 1.0
-_CubeColor("Cube Color", Color) = (1.0, 1.0, 1.0, 1.0)
-_SphereColor("Sphere Color", Color) = (1.0, 1.0, 1.0, 1.0)
-_TorusColor("Torus Color", Color) = (1.0, 1.0, 1.0, 1.0)
-_PlaneColor("Plane Color", Color) = (1.0, 1.0, 1.0, 1.0)
+_Distortion("Distortion", Range(0.0, 1.0)) = 0.2
 // @endblock
 }
 
@@ -36,8 +31,8 @@ SubShader
 
 Tags
 {
-    "RenderType" = "Opaque"
-    "Queue" = "Geometry"
+    "RenderType" = "Transparent"
+    "Queue" = "Transparent"
     "DisableBatching" = "True"
 }
 
@@ -45,11 +40,13 @@ Cull [_Cull]
 
 CGINCLUDE
 
-#define WORLD_SPACE
-
 #define OBJECT_SHAPE_CUBE
 
+#define CAMERA_INSIDE_OBJECT
+
 #define USE_RAYMARCHING_DEPTH
+
+#define USE_CAMERA_DEPTH_TEXTURE
 
 #define SPHERICAL_HARMONICS_PER_PIXEL
 
@@ -60,58 +57,71 @@ CGINCLUDE
 #include "Assets/uRaymarching/Shaders/Include/Common.cginc"
 
 // @block DistanceFunction
-// These inverse transform matrices are provided
-// from TransformProvider script 
-float4x4 _Cube;
-float4x4 _Sphere;
-float4x4 _Torus;
-float4x4 _Plane; 
+// Ref: https://gam0022.net/blog/2017/03/02/raymarching-fold/
 
-float _Smooth;
-
-inline float DistanceFunction(float3 wpos)
+float2x2 rotate(in float a) 
 {
-    float4 cPos = mul(_Cube, float4(wpos, 1.0));
-    float4 sPos = mul(_Sphere, float4(wpos, 1.0));
-    float4 tPos = mul(_Torus, float4(wpos, 1.0));
-    float4 pPos = mul(_Plane, float4(wpos, 1.0));
-    float s = Sphere(sPos, 0.5);
-    float c = Box(cPos, 0.5);
-    float t = Torus(tPos, float2(0.5, 0.2));
-    float p = Plane(pPos, float3(0, 1, 0));
-    float sc = SmoothMin(s, c, _Smooth);
-    float tp = SmoothMin(t, p, _Smooth);
-    return SmoothMin(sc, tp, _Smooth);
+    float s = sin(a), c = cos(a);
+    return float2x2(c, s, -s, c);
+}
+
+// https://www.shadertoy.com/view/Mlf3Wj
+float2 foldRotate(in float2 p, in float s) 
+{
+    float a = PI / s - atan2(p.x, p.y);
+    float n = 2 * PI / s;
+    a = floor(a / n) * n;
+    p = mul(rotate(a), p);
+    return p;
+}
+
+float dTree(float3 p) 
+{
+    float scale = 0.6 * saturate(1.5 * 10);//_SinTime.y);
+    float width = lerp(0.3 * scale, 0.0, saturate(p.y));
+    float3 size = float3(width, 1.0, width);
+    float d = Box(p, size);
+    for (int i = 0; i < 10; i++) {
+        float3 q = p;
+        q.x = abs(q.x);
+        q.y -= 0.5 * size.y;
+        q.xy = mul(rotate(-1.2), q.xy);
+        d = min(d, Box(p, size));
+        p = q;
+        size *= scale;
+    }
+    return d;
+}
+
+float dSnowCrystal(float3 p) {
+    p.xy = foldRotate(p.xy, 6.0);
+    return dTree(p);
+}
+
+inline float DistanceFunction(float3 pos)
+{
+    return dSnowCrystal(pos);
 }
 // @endblock
 
 // @block PostEffect
-float4 _CubeColor;
-float4 _SphereColor;
-float4 _TorusColor;
-float4 _PlaneColor;
+sampler2D _GrabTexture;
+float _Distortion;
 
 inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)
 {
-    float3 wpos = ray.endPos;
-    float4 cPos = mul(_Cube, float4(wpos, 1.0));
-    float4 sPos = mul(_Sphere, float4(wpos, 1.0));
-    float4 tPos = mul(_Torus, float4(wpos, 1.0));
-    float4 pPos = mul(_Plane, float4(wpos, 1.0));
-    float s = Sphere(sPos, 0.5);
-    float c = Box(cPos, 0.5);
-    float t = Torus(tPos, float2(0.5, 0.2));
-    float p = Plane(pPos, float3(0, 1, 0));
-    float4 a = normalize(float4(1.0 / s, 1.0 / c, 1.0 / t, 1.0 / p));
-    o.Albedo =
-        a.x * _SphereColor +
-        a.y * _CubeColor +
-        a.z * _TorusColor +
-        a.w * _PlaneColor;
+    float3 normal = DecodeNormal(ray.normal);
+    float2 uv = ray.projPos.xy / ray.projPos.w + normal.xy * _Distortion;
+    o.Albedo *= tex2D(_GrabTexture, uv) * 1.2;
+    o.Albedo += ray.normal.zyx * 0.1;
+    o.Occlusion = 1.0 - 1.0 * ray.loop / ray.maxLoop;
+    o.Emission = o.Albedo * o.Occlusion * 0.5;
 }
 // @endblock
 
 ENDCG
+
+GrabPass {}
 
 Pass
 {
