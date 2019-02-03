@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3acd6fe57257048db802c1c4c2b75248, type: 3}
+  m_Name: Folding
+  m_EditorClassIdentifier: 
+  shaderName: Folding
+  shaderReference: {fileID: 4800000, guid: 547c0683c9b8249a2b87ed1db1c7ba17, type: 3}
+  shaderTemplate: uRaymarching/Forward/Standard
+  variables:
+  - key: Name
+    value: Folding
+  - key: ObjectShape
+    value: CUBE
+  - key: RaymarchingShaderDirectory
+    value: Assets/uRaymarching/Shaders/Include
+  - key: RenderType
+    value: Transparent
+  - key: RenderQueue
+    value: Transparent
+  conditions:
+  - key: ShadowCaster
+    value: 1
+  - key: FullScreen
+    value: 0
+  - key: WorldSpace
+    value: 0
+  - key: FollowObjectScale
+    value: 0
+  - key: CameraInsideObject
+    value: 0
+  - key: UseRaymarchingDepth
+    value: 1
+  - key: FallbackToDiffuse
+    value: 1
+  - key: Blend
+    value: 1
+  - key: UseCameraDepthTexture
+    value: 1
+  - key: DisableViewCulling
+    value: 0
+  - key: SphericalHarmonicsPerPixel
+    value: 1
+  - key: ForwardAdd
+    value: 1
+  - key: FallbackToStandardShader
+    value: 0
+  blocks:
+  - key: Properties
+    value: // _Color2("Color2", Color) = (1.0, 1.0, 1.0, 1.0)
+    folded: 1
+  - key: DistanceFunction
+    value: "// Ref: https://gam0022.net/blog/2017/03/02/raymarching-fold/\n\nfloat2x2
+      rotate(in float a) \n{\n    float s = sin(a), c = cos(a);\n    return float2x2(c,
+      s, -s, c);\n}\n\n// https://www.shadertoy.com/view/Mlf3Wj\nfloat2 foldRotate(in
+      float2 p, in float s) \n{\n    float a = PI / s - atan2(p.x, p.y);\n    float
+      n = 2 * PI / s;\n    a = floor(a / n) * n;\n    p = mul(rotate(a), p);\n    return
+      p;\n}\n\nfloat dTree(float3 p) \n{\n    float scale = 0.6 * saturate(1.5 * 10);//_SinTime.y);\n
+      \   float width = lerp(0.3 * scale, 0.0, saturate(p.y));\n    float3 size =
+      float3(width, 1.0, width);\n    float d = Box(p, size);\n    for (int i = 0;
+      i < 10; i++) {\n        float3 q = p;\n        q.x = abs(q.x);\n        q.y
+      -= 0.5 * size.y;\n        q.xy = mul(rotate(-1.2), q.xy);\n        d = min(d,
+      Box(p, size));\n        p = q;\n        size *= scale;\n    }\n    return d;\n}\n\nfloat
+      dSnowCrystal(float3 p) {\n    p.xy = foldRotate(p.xy, 6.0);\n    return dTree(p);\n}\n\ninline
+      float DistanceFunction(float3 pos)\n{\n    return dSnowCrystal(pos);\n}"
+    folded: 1
+  - key: PostEffect
+    value: "inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)\n{\n
+      \   o.Occlusion = 1.0 - 1.0 * ray.loop / ray.maxLoop;\n    o.Emission = o.Albedo
+      * 1.0 * ray.loop / ray.maxLoop;\n}"
+    folded: 1
+  constants: {fileID: 11400000, guid: 4df15a420345e4af98645ddd9620aa5b, type: 2}
+  basicFolded: 1
+  conditionsFolded: 1
+  variablesFolded: 1
+  materialsFolded: 1
+  constantsFolded: 1
