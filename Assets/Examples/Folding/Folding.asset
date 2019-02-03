@@ -35,7 +35,7 @@ MonoBehaviour:
   - key: FollowObjectScale
     value: 0
   - key: CameraInsideObject
-    value: 0
+    value: 1
   - key: UseRaymarchingDepth
     value: 1
   - key: FallbackToDiffuse

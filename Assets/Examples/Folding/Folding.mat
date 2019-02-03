@@ -21,7 +21,7 @@ Material:
     m_Floats:
     - _BlendDst: 10
     - _BlendSrc: 5
-    - _Cull: 2
+    - _Cull: 0
     - _DistanceMultiplier: 0.9
     - _Glossiness: 1
     - _Loop: 30
