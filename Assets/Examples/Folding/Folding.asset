@@ -74,7 +74,7 @@ MonoBehaviour:
   - key: PostEffect
     value: "inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)\n{\n
       \   o.Occlusion = 1.0 - 1.0 * ray.loop / ray.maxLoop;\n    o.Emission = o.Albedo
-      * 1.0 * ray.loop / ray.maxLoop;\n}"
+      * ray.loop / ray.maxLoop;\n}"
     folded: 1
   constants: {fileID: 11400000, guid: 4df15a420345e4af98645ddd9620aa5b, type: 2}
   basicFolded: 1

@@ -109,7 +109,7 @@ inline float DistanceFunction(float3 pos)
 inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)
 {
     o.Occlusion = 1.0 - 1.0 * ray.loop / ray.maxLoop;
-    o.Emission = o.Albedo * 1.0 * ray.loop / ray.maxLoop;
+    o.Emission = o.Albedo * ray.loop / ray.maxLoop;
 }
 // @endblock
 

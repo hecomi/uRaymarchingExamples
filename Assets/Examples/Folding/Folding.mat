@@ -22,7 +22,7 @@ Material:
     - _BlendDst: 10
     - _BlendSrc: 5
     - _Cull: 0
-    - _DistanceMultiplier: 0.9
+    - _DistanceMultiplier: 0.85
     - _Glossiness: 1
     - _Loop: 30
     - _Metallic: 1
