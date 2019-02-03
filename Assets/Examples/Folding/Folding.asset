@@ -41,7 +41,7 @@ MonoBehaviour:
   - key: FallbackToDiffuse
     value: 1
   - key: Blend
-    value: 1
+    value: 0
   - key: UseCameraDepthTexture
     value: 1
   - key: DisableViewCulling
@@ -52,9 +52,11 @@ MonoBehaviour:
     value: 1
   - key: FallbackToStandardShader
     value: 0
+  - key: UseGrabPass
+    value: 1
   blocks:
   - key: Properties
-    value: // _Color2("Color2", Color) = (1.0, 1.0, 1.0, 1.0)
+    value: _Distortion("Distortion", Range(0.0, 1.0)) = 0.2
     folded: 1
   - key: DistanceFunction
     value: "// Ref: https://gam0022.net/blog/2017/03/02/raymarching-fold/\n\nfloat2x2
@@ -72,9 +74,12 @@ MonoBehaviour:
       float DistanceFunction(float3 pos)\n{\n    return dSnowCrystal(pos);\n}"
     folded: 1
   - key: PostEffect
-    value: "inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)\n{\n
-      \   o.Occlusion = 1.0 - 1.0 * ray.loop / ray.maxLoop;\n    o.Emission = o.Albedo
-      * ray.loop / ray.maxLoop;\n}"
+    value: "sampler2D _GrabTexture;\nfloat _Distortion;\n\ninline void PostEffect(RaymarchInfo
+      ray, inout PostEffectOutput o)\n{\n    float3 normal = DecodeNormal(ray.normal);\n
+      \   float2 uv = ray.projPos.xy / ray.projPos.w + normal.xy * _Distortion;\n
+      \   o.Albedo *= tex2D(_GrabTexture, uv) * 1.2;\n    o.Albedo += ray.normal.zyx
+      * 0.1;\n    o.Occlusion = 1.0 - 1.0 * ray.loop / ray.maxLoop;\n    o.Emission
+      = o.Albedo * o.Occlusion * 0.5;\n}"
     folded: 1
   constants: {fileID: 11400000, guid: 4df15a420345e4af98645ddd9620aa5b, type: 2}
   basicFolded: 1

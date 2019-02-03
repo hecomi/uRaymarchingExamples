@@ -10,8 +10,7 @@ Properties
 
     [Header(Pass)]
     [Enum(UnityEngine.Rendering.CullMode)] _Cull("Culling", Int) = 2
-    [Enum(UnityEngine.Rendering.BlendMode)] _BlendSrc("Blend Src", Float) = 5 
-    [Enum(UnityEngine.Rendering.BlendMode)] _BlendDst("Blend Dst", Float) = 10
+
     [Toggle][KeyEnum(Off, On)] _ZWrite("ZWrite", Float) = 1
 
     [Header(Raymarching)]
@@ -23,7 +22,7 @@ Properties
     _ShadowExtraBias("Shadow Extra Bias", Range(0.0, 1.0)) = 0.0
 
 // @block Properties
-// _Color2("Color2", Color) = (1.0, 1.0, 1.0, 1.0)
+_Distortion("Distortion", Range(0.0, 1.0)) = 0.2
 // @endblock
 }
 
@@ -106,19 +105,28 @@ inline float DistanceFunction(float3 pos)
 // @endblock
 
 // @block PostEffect
+sampler2D _GrabTexture;
+float _Distortion;
+
 inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)
 {
+    float3 normal = DecodeNormal(ray.normal);
+    float2 uv = ray.projPos.xy / ray.projPos.w + normal.xy * _Distortion;
+    o.Albedo *= tex2D(_GrabTexture, uv) * 1.2;
+    o.Albedo += ray.normal.zyx * 0.1;
     o.Occlusion = 1.0 - 1.0 * ray.loop / ray.maxLoop;
-    o.Emission = o.Albedo * ray.loop / ray.maxLoop;
+    o.Emission = o.Albedo * o.Occlusion * 0.5;
 }
 // @endblock
 
 ENDCG
 
+GrabPass {}
+
 Pass
 {
     Tags { "LightMode" = "ForwardBase" }
-    Blend [_BlendSrc] [_BlendDst]
+
     ZWrite [_ZWrite]
 
     CGPROGRAM
