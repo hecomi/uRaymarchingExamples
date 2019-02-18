@@ -1,4 +1,4 @@
-Shader "Raymarching/InteractiveMetaballs"
+Shader "Raymarching/TransformProvider"
 {
 
 Properties
@@ -19,7 +19,7 @@ Properties
     _DistanceMultiplier("Distance Multiplier", Range(0.001, 2.0)) = 1.0
     _ShadowLoop("Shadow Loop", Range(1, 100)) = 30
     _ShadowMinDistance("Shadow Minimum Distance", Range(0.001, 0.1)) = 0.01
-    _ShadowExtraBias("Shadow Extra Bias", Range(0.0, 1.0)) = 0.0
+    _ShadowExtraBias("Shadow Extra Bias", Range(0.0, 0.1)) = 0.0
 
 // @block Properties
 [Header(Additional Parameters)]
@@ -57,7 +57,7 @@ CGINCLUDE
 #define PostEffectOutput SurfaceOutputStandard
 #define POST_EFFECT PostEffect
 
-#include "Assets/uRaymarching/Shaders/Include/Common.cginc"
+#include "Assets\uRaymarching\Shaders\Include/Common.cginc"
 
 // @block DistanceFunction
 // These inverse transform matrices are provided
@@ -120,7 +120,7 @@ Pass
     ZWrite [_ZWrite]
 
     CGPROGRAM
-    #include "Assets/uRaymarching/Shaders/Include/ForwardBaseStandard.cginc"
+    #include "Assets\uRaymarching\Shaders\Include/ForwardBaseStandard.cginc"
     #pragma target 3.0
     #pragma vertex Vert
     #pragma fragment Frag
@@ -137,7 +137,7 @@ Pass
     Blend One One
 
     CGPROGRAM
-    #include "Assets/uRaymarching/Shaders/Include/ForwardAddStandard.cginc"
+    #include "Assets\uRaymarching\Shaders\Include/ForwardAddStandard.cginc"
     #pragma target 3.0
     #pragma vertex Vert
     #pragma fragment Frag
@@ -153,7 +153,7 @@ Pass
     Tags { "LightMode" = "ShadowCaster" }
 
     CGPROGRAM
-    #include "Assets/uRaymarching/Shaders/Include/ShadowCaster.cginc"
+    #include "Assets\uRaymarching\Shaders\Include/ShadowCaster.cginc"
     #pragma target 3.0
     #pragma vertex Vert
     #pragma fragment Frag

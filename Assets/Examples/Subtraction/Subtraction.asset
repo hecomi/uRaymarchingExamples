@@ -9,18 +9,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3acd6fe57257048db802c1c4c2b75248, type: 3}
-  m_Name: Forward_Sphere
+  m_Name: Subtraction
   m_EditorClassIdentifier: 
-  shaderName: Forward_Sphere
-  shaderReference: {fileID: 4800000, guid: 00455a7e49d41954795618b9f10b9a0b, type: 3}
+  shaderName: Subtraction
+  shaderReference: {fileID: 4800000, guid: 0f0fe4477e88cff4a921911c09746f24, type: 3}
   shaderTemplate: uRaymarching/Forward/Standard
   variables:
   - key: Name
-    value: Forward_Sphere
+    value: Subtraction
   - key: ObjectShape
-    value: CUBE
+    value: NONE
   - key: RaymarchingShaderDirectory
-    value: Assets/uRaymarching/Shaders/Include
+    value: Assets\uRaymarching\Shaders\Include
   - key: RenderType
     value: Opaque
   - key: RenderQueue
@@ -33,9 +33,9 @@ MonoBehaviour:
   - key: WorldSpace
     value: 0
   - key: FollowObjectScale
-    value: 0
+    value: 1
   - key: CameraInsideObject
-    value: 0
+    value: 1
   - key: UseRaymarchingDepth
     value: 1
   - key: FallbackToDiffuse
@@ -48,18 +48,20 @@ MonoBehaviour:
     value: 0
   - key: SphericalHarmonicsPerPixel
     value: 1
-  - key: ForwardAdd
-    value: 1
-  - key: FallbackToStandardShader
-    value: 0
   - key: UseGrabPass
+    value: 0
+  - key: ForwardAdd
+    value: 0
+  - key: FallbackToStandardShader
     value: 0
   blocks:
   - key: Properties
     value: // _Color2("Color2", Color) = (1.0, 1.0, 1.0, 1.0)
     folded: 1
   - key: DistanceFunction
-    value: "inline float DistanceFunction(float3 pos)\n{\n    return Sphere(pos, 0.5);\n}"
+    value: "inline float DistanceFunction(float3 pos)\n{\n    float x = Box(pos, 0.5);\n
+      \   pos -= float3(0.25, 0.25, 0.25);\n    float y = Box(pos, 0.5);\n    return
+      max(-y, x) + 0.01;\n}"
     folded: 1
   - key: PostEffect
     value: 'inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)
@@ -67,10 +69,10 @@ MonoBehaviour:
       {
 
       }'
-    folded: 0
+    folded: 1
   constants: {fileID: 11400000, guid: 4df15a420345e4af98645ddd9620aa5b, type: 2}
   basicFolded: 1
   conditionsFolded: 1
   variablesFolded: 1
-  materialsFolded: 0
+  materialsFolded: 1
   constantsFolded: 0

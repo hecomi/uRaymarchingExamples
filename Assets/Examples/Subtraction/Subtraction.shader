@@ -1,4 +1,4 @@
-Shader "Raymarching/SphereBoxMorphForwardStandard"
+Shader "Raymarching/Subtraction"
 {
 
 Properties
@@ -22,7 +22,7 @@ Properties
     _ShadowExtraBias("Shadow Extra Bias", Range(0.0, 0.1)) = 0.0
 
 // @block Properties
-// _Color("Color", Color) = (1.0, 1.0, 1.0, 1.0)
+// _Color2("Color2", Color) = (1.0, 1.0, 1.0, 1.0)
 // @endblock
 }
 
@@ -40,7 +40,9 @@ Cull [_Cull]
 
 CGINCLUDE
 
-#define OBJECT_SHAPE_CUBE
+#define OBJECT_SCALE
+
+#define OBJECT_SHAPE_NONE
 
 #define CAMERA_INSIDE_OBJECT
 
@@ -52,27 +54,21 @@ CGINCLUDE
 #define PostEffectOutput SurfaceOutputStandard
 #define POST_EFFECT PostEffect
 
-#include "Assets/uRaymarching/Shaders/Include/Common.cginc"
+#include "Assets\uRaymarching\Shaders\Include/Common.cginc"
 
 // @block DistanceFunction
 inline float DistanceFunction(float3 pos)
 {
-    float t = _Time.x;
-    float a = 6 * PI * t;
-    float s = pow(sin(a), 2.0);
-    float d1 = Sphere(pos, 0.75);
-    float d2 = RoundBox(
-        Repeat(pos, 0.2),
-        0.1 - 0.1 * s,
-        0.1 / length(pos * 2.0));
-    return lerp(d1, d2, s);
+    float x = Box(pos, 0.5);
+    pos -= float3(0.25, 0.25, 0.25);
+    float y = Box(pos, 0.5);
+    return max(-y, x) + 0.01;
 }
 // @endblock
 
 // @block PostEffect
 inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)
 {
-    o.Occlusion *= pow(1.0 - 1.0 * ray.loop / ray.maxLoop, 2.0);
 }
 // @endblock
 
@@ -85,7 +81,7 @@ Pass
     ZWrite [_ZWrite]
 
     CGPROGRAM
-    #include "Assets/uRaymarching/Shaders/Include/ForwardBaseStandard.cginc"
+    #include "Assets\uRaymarching\Shaders\Include/ForwardBaseStandard.cginc"
     #pragma target 3.0
     #pragma vertex Vert
     #pragma fragment Frag
@@ -97,28 +93,10 @@ Pass
 
 Pass
 {
-    Tags { "LightMode" = "ForwardAdd" }
-    ZWrite Off 
-    Blend One One
-
-    CGPROGRAM
-    #include "Assets/uRaymarching/Shaders/Include/ForwardAddStandard.cginc"
-    #pragma target 3.0
-    #pragma vertex Vert
-    #pragma fragment Frag
-    #pragma multi_compile_instancing
-    #pragma multi_compile_fog
-    #pragma skip_variants INSTANCING_ON
-    #pragma multi_compile_fwdadd_fullshadows
-    ENDCG
-}
-
-Pass
-{
     Tags { "LightMode" = "ShadowCaster" }
 
     CGPROGRAM
-    #include "Assets/uRaymarching/Shaders/Include/ShadowCaster.cginc"
+    #include "Assets\uRaymarching\Shaders\Include/ShadowCaster.cginc"
     #pragma target 3.0
     #pragma vertex Vert
     #pragma fragment Frag
